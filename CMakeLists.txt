@@ -17,8 +17,8 @@ FetchContent_MakeAvailable(SFML)    # Makes sure SFML and its dependencies are a
 
 #---- File management & .exe creation ----#
 
-set(SOURCE_FILES src/main.cpp)  # Sets variable SOURCE_FILES to hold names & locations of files that need to be compiled into the application
-add_executable(SFML-utils ${SOURCE_FILES})  # Names the application and tells compiler which source files to use
+set(SOURCE_FILES src/main.cpp "src/RenderQueue.h" "src/RenderQueue.cpp")  # Sets variable SOURCE_FILES to hold names & locations of files that need to be compiled into the application
+add_executable(SFML-utils ${SOURCE_FILES} )  # Names the application and tells compiler which source files to use
 
 target_link_libraries(SFML-utils PRIVATE sfml-graphics sfml-window sfml-system sfml-network sfml-audio) # Links the SFML libraries we need to our application
 target_compile_features(SFML-utils PRIVATE cxx_std_20)  # Defines which standard of C++ the compiler should use
