@@ -14,3 +14,17 @@ sf::Sprite SpriteUtils::getSpriteFromPath(std::string path)
   std::cout << "Failed to load Texture from path " << path;
   return sf::Sprite();
 }
+
+sf::Sprite SpriteUtils::getSpriteFromPath(std::string path, int scale)
+{
+  sf::Texture texture;
+  sf::Sprite sprite;
+  if (texture.loadFromFile(path))
+  {
+    sprite.setTexture(texture);
+    sprite.setScale(scale, scale);
+    return sprite;
+  }
+  std::cout << "Failed to load Texture from path " << path;
+  return sf::Sprite();
+}
