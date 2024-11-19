@@ -1,15 +1,22 @@
 #include "RenderQueue.h"
 #include <SFML/Graphics.hpp>
 
+// pass by reference rather than by pointer because I dont understand pointers. 
+RenderQueue::RenderQueue(sf::RenderWindow& window) : game_window(window) 
+{
+    
+}
+
 // render queue utils
-bool RenderQueue::render(sf::RenderWindow window)
+bool RenderQueue::render()
 {
   sortRenderQueue();
-  window.clear(sf::Color::Black);
+  game_window.clear(sf::Color::Black);
   for (RenderQueue::RenderItem element : render_queue)
   {
-    window.draw(element.sprite);
+    game_window.draw(element.sprite);
   }
+  game_window.display();
   resetRenderQueue();
   return 1;
 }
@@ -23,18 +30,18 @@ bool RenderQueue::addToRenderQueue(RenderQueue::RenderItem render_item)
 
 bool RenderQueue::removeFromRenderQueue(RenderItem remove_render_item)
 {
-  int index = 0;
-  for (RenderQueue::RenderItem element : render_queue)
-  {
-    // i dont know why this doesnt work, fix later.
-    // if (element == remove_render_item)
-    //{
-    //  render_queue.erase(render_queue.begin()+index);
-    //  return 1;
-    //}
-    index++;
-  }
-  return 1;
+  //int index = 0;
+  //for (RenderQueue::RenderItem element : render_queue)
+  //{
+  //   i dont know why this doesnt work, fix later.
+  //   if (element == remove_render_item)
+  //  {
+  //    render_queue.erase(render_queue.begin()+index);
+  //    return 1;
+  //  }
+  //  index++;
+  //}
+  return 0;
 }
 
 int RenderQueue::getRenderQueueLength()
@@ -44,7 +51,7 @@ int RenderQueue::getRenderQueueLength()
 
 bool RenderQueue::sortRenderQueue()
 {
-  // bubble sort
+  // simple bubble sort implimentation, sort the list based on layer. 
   bool changed = 1;
   int index;
   RenderQueue::RenderItem hold;

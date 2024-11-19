@@ -1,6 +1,6 @@
 #include <SFML/Graphics.hpp>
-#include <string>
 #include <vector>
+
 
 class RenderQueue
 {
@@ -12,12 +12,15 @@ class RenderQueue
 
   std::vector<RenderItem> render_queue;
   int render_queue_length = 0;
+  sf::RenderWindow& game_window;
 
  public:
-  bool render(sf::RenderWindow);
+  RenderQueue(sf::RenderWindow &window);
+  bool render();
   bool addToRenderQueue(RenderItem);
   bool removeFromRenderQueue(RenderItem);
   int getRenderQueueLength();
+
  private:
   bool sortRenderQueue();
   bool resetRenderQueue();
