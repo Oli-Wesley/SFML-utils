@@ -18,6 +18,7 @@ class RenderQueue
   RenderQueue(sf::RenderWindow &window);
   bool render();
   bool addToRenderQueue(RenderItem);
+  bool addToRenderQueue(sf::Sprite sprite, int layer);
   bool removeFromRenderQueue(RenderItem);
   int getRenderQueueLength();
 
