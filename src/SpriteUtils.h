@@ -3,6 +3,7 @@
 
 namespace SpriteUtils
 {
-  sf::Sprite getSpriteFromPath(std::string path);
-  sf::Sprite getSpriteFromPath(std::string path, int scale);
+  sf::Sprite getSpriteFromPath(std::string path, sf::Texture &texture);
+  sf::Sprite
+  getSpriteFromPath(std::string path, sf::Texture &texture, int scale);
 }

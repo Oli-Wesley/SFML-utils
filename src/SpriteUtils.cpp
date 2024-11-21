@@ -2,9 +2,8 @@
 #include <iostream>
 
 // returns a sprite with a texture based on a given path
-sf::Sprite SpriteUtils::getSpriteFromPath(std::string path)
+sf::Sprite SpriteUtils::getSpriteFromPath(std::string path, sf::Texture &texture)
 {
-  sf::Texture texture;
   sf::Sprite sprite;
   if (texture.loadFromFile(path))
   {
@@ -12,12 +11,12 @@ sf::Sprite SpriteUtils::getSpriteFromPath(std::string path)
     return sprite;
   }
   std::cout << "Failed to load Texture from path " << path;
-  return sf::Sprite();
+  return sprite;
 }
 
-sf::Sprite SpriteUtils::getSpriteFromPath(std::string path, int scale)
+sf::Sprite
+SpriteUtils::getSpriteFromPath(std::string path, sf::Texture& texture, int scale)
 {
-  sf::Texture texture;
   sf::Sprite sprite;
   if (texture.loadFromFile(path))
   {
@@ -25,6 +24,6 @@ sf::Sprite SpriteUtils::getSpriteFromPath(std::string path, int scale)
     sprite.setScale(scale, scale);
     return sprite;
   }
-  std::cout << "Failed to load Texture from path " << path;
-  return sf::Sprite();
+  std::cout << "Failed to load Texture from path " << path << "\n";
+  return sprite;
 }
