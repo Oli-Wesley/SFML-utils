@@ -1,3 +1,6 @@
+#ifndef RENDER_QUEUE_H
+#define RENDER_QUEUE_H
+
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -26,3 +29,5 @@ class RenderQueue
   bool sortRenderQueue();
   bool resetRenderQueue();
 };
+
+#endif 
