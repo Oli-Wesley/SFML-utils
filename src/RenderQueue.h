@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics.hpp>
 
-
 class RenderQueue
 {
   struct RenderItem
@@ -12,9 +11,8 @@ class RenderQueue
     int layer = NULL;
   };
 
-
   int render_queue_length  = 0;
-  RenderItem* render_queue = nullptr;  
+  RenderItem* render_queue = nullptr;
   sf::RenderWindow& game_window;
 
  public:
@@ -30,4 +28,4 @@ class RenderQueue
   void pushBack(RenderItem element);
 };
 
-#endif 
+#endif

@@ -1,9 +1,8 @@
 #include "RenderQueue.h"
 #include <SFML/Graphics.hpp>
 
-// constructor, saves the window value for later use.  
-RenderQueue::RenderQueue(sf::RenderWindow& window) :
-  game_window(window)
+// constructor, saves the window value for later use.
+RenderQueue::RenderQueue(sf::RenderWindow& window) : game_window(window)
 {
   delete[] render_queue;
   render_queue = new RenderItem[render_queue_length];
@@ -23,7 +22,7 @@ bool RenderQueue::render()
   return 1;
 }
 
-// Public: add to queue with a pre-made render item. 
+// Public: add to queue with a pre-made render item.
 bool RenderQueue::addToRenderQueue(RenderQueue::RenderItem render_item)
 {
   pushBack(render_item);
@@ -34,7 +33,7 @@ bool RenderQueue::addToRenderQueue(RenderQueue::RenderItem render_item)
 bool RenderQueue::addToRenderQueue(sf::Sprite sprite, int layer)
 {
   RenderItem render_item;
-  render_item.layer = layer;
+  render_item.layer  = layer;
   render_item.sprite = sprite;
   pushBack(render_item);
   return 1;
@@ -45,17 +44,18 @@ int RenderQueue::getRenderQueueLength()
   return render_queue_length;
 }
 
-// private: sort the render queue, this puts the queue in order ready for rendering. 
+// private: sort the render queue, this puts the queue in order ready for
+// rendering.
 bool RenderQueue::sortRenderQueue()
 {
-  // simple bubble sort implimentation, sort the list based on layer. 
+  // simple bubble sort implimentation, sort the list based on layer.
   bool changed = 1;
-  
+
   RenderQueue::RenderItem hold;
   while (changed)
   {
     changed = 0;
-    for (int index = 0 ; index < render_queue_length-1 ; index++)
+    for (int index = 0; index < render_queue_length - 1; index++)
     {
       if (render_queue[index].layer > render_queue[index + 1].layer)
       {
@@ -69,7 +69,7 @@ bool RenderQueue::sortRenderQueue()
   return 1;
 }
 
-// private: resets the render queue. 
+// private: resets the render queue.
 bool RenderQueue::resetRenderQueue()
 {
   render_queue_length = 0;
@@ -95,11 +95,11 @@ void RenderQueue::pushBack(RenderItem element)
   render_queue = new RenderItem[render_queue_length];
 
   // assign to temp, then delete temp;
-  for (int i = 0; i < render_queue_length -1; i++)
+  for (int i = 0; i < render_queue_length - 1; i++)
   {
     render_queue[i] = temp[i];
   }
+  delete[] temp;
 
-
-  render_queue[render_queue_length-1] = element;
+  render_queue[render_queue_length - 1] = element;
 }
