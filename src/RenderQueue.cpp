@@ -2,9 +2,11 @@
 #include <SFML/Graphics.hpp>
 
 // constructor, saves the window value for later use.  
-RenderQueue::RenderQueue(sf::RenderWindow& window) : game_window(window) 
+RenderQueue::RenderQueue(sf::RenderWindow& window) :
+  game_window(window)
 {
-    
+  delete[] render_queue;
+  render_queue = new RenderItem[render_queue_length];
 }
 
 // Public: sorts, then draws the render queue, starting with the lowest layer.
@@ -12,9 +14,9 @@ bool RenderQueue::render()
 {
   sortRenderQueue();
   game_window.clear(sf::Color::Black);
-  for (RenderQueue::RenderItem element : render_queue)
+  for (int i = 0; i < render_queue_length; i++)
   {
-    game_window.draw(element.sprite);
+    game_window.draw(render_queue[i].sprite);
   }
   game_window.display();
   resetRenderQueue();
@@ -24,8 +26,7 @@ bool RenderQueue::render()
 // Public: add to queue with a pre-made render item. 
 bool RenderQueue::addToRenderQueue(RenderQueue::RenderItem render_item)
 {
-  render_queue.push_back(render_item);
-  render_queue_length++;
+  pushBack(render_item);
   return 1;
 }
 
@@ -35,26 +36,8 @@ bool RenderQueue::addToRenderQueue(sf::Sprite sprite, int layer)
   RenderItem render_item;
   render_item.layer = layer;
   render_item.sprite = sprite;
-  render_queue.push_back(render_item);
-  render_queue_length++;
+  pushBack(render_item);
   return 1;
-}
-
-// doesnt work, not really needed so cant be bothered to implement for now.
-bool RenderQueue::removeFromRenderQueue(RenderItem remove_render_item)
-{
-  //int index = 0;
-  //for (RenderQueue::RenderItem element : render_queue)
-  //{
-  //   i dont know why this doesnt work, fix later.
-  //   if (element == remove_render_item)
-  //  {
-  //    render_queue.erase(render_queue.begin()+index);
-  //    return 1;
-  //  }
-  //  index++;
-  //}
-  return 0;
 }
 
 int RenderQueue::getRenderQueueLength()
@@ -90,6 +73,33 @@ bool RenderQueue::sortRenderQueue()
 bool RenderQueue::resetRenderQueue()
 {
   render_queue_length = 0;
-  render_queue.clear();
+  delete[] render_queue;
+  render_queue = new RenderItem[render_queue_length];
   return 1;
+}
+
+void RenderQueue::pushBack(RenderItem element)
+{
+  // create temp.
+  RenderItem* temp = new RenderItem[render_queue_length];
+
+  // assign temp to the current render queue;
+  for (int i = 0; i < render_queue_length; i++)
+  {
+    temp[i] = render_queue[i];
+  }
+
+  // delete old array, create new one with larger size.
+  delete[] render_queue;
+  render_queue_length++;
+  render_queue = new RenderItem[render_queue_length];
+
+  // assign to temp, then delete temp;
+  for (int i = 0; i < render_queue_length -1; i++)
+  {
+    render_queue[i] = temp[i];
+  }
+
+
+  render_queue[render_queue_length-1] = element;
 }
