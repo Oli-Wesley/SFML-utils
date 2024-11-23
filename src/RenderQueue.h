@@ -5,17 +5,12 @@
 
 class RenderQueue
 {
+ public:
   struct RenderItem
   {
     sf::Sprite sprite;
     int layer = NULL;
   };
-
-  int render_queue_length  = 0;
-  RenderItem* render_queue = nullptr;
-  sf::RenderWindow& game_window;
-
- public:
   RenderQueue(sf::RenderWindow& window);
   bool render();
   bool addToRenderQueue(RenderItem);
@@ -26,6 +21,9 @@ class RenderQueue
   bool sortRenderQueue();
   bool resetRenderQueue();
   void pushBack(RenderItem element);
+  int render_queue_length  = 0;
+  RenderItem* render_queue = nullptr;
+  sf::RenderWindow& game_window;
 };
 
 #endif

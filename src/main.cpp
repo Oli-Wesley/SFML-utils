@@ -57,8 +57,12 @@ int main()
         render_queue.addToRenderQueue(bird, 1);
         render_queue.addToRenderQueue(ball, 3);
         render_queue.addToRenderQueue(background, 0);
-        render_queue.addToRenderQueue(cat, 2);
 
+        // can also add via a render item. 
+        RenderQueue::RenderItem temp;
+        temp.layer = 2;
+        temp.sprite = cat;
+        render_queue.addToRenderQueue(temp);
 
 
         // render, done at the end, renders in order with the lowest layer first. 
