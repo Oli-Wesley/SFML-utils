@@ -9,7 +9,7 @@ RenderQueue::RenderQueue(sf::RenderWindow& window) : game_window(window)
 }
 
 // Public: sorts, then draws the render queue, starting with the lowest layer.
-bool RenderQueue::render()
+void RenderQueue::render()
 {
   sortRenderQueue();
   game_window.clear(sf::Color::Black);
@@ -27,7 +27,7 @@ bool RenderQueue::render()
     {
       game_window.draw(*render_queue[i].circle_shape);
     }
-    else if (render_queue[i].convex_shape!= nullptr)
+    else if (render_queue[i].convex_shape != nullptr)
     {
       game_window.draw(*render_queue[i].convex_shape);
     }
@@ -35,17 +35,16 @@ bool RenderQueue::render()
     {
       game_window.draw(*render_queue[i].rectangle_shape);
     }
-    else if (render_queue[i].vertex_array!= nullptr)
+    else if (render_queue[i].vertex_array != nullptr)
     {
       game_window.draw(*render_queue[i].vertex_array);
     }
   }
   game_window.display();
   resetRenderQueue();
-  return 1;
 }
 
-void RenderQueue::addTorenderQueue(RenderItem render_item) 
+void RenderQueue::addTorenderQueue(RenderItem render_item)
 {
   pushBack(render_item);
 }
@@ -107,7 +106,7 @@ int RenderQueue::getRenderQueueLength()
 
 // private: sort the render queue, this puts the queue in order ready for
 // rendering.
-bool RenderQueue::sortRenderQueue()
+void RenderQueue::sortRenderQueue()
 {
   // simple bubble sort implimentation, sort the list based on layer.
   bool changed = 1;
@@ -127,16 +126,14 @@ bool RenderQueue::sortRenderQueue()
       }
     }
   }
-  return 1;
 }
 
 // private: resets the render queue.
-bool RenderQueue::resetRenderQueue()
+void RenderQueue::resetRenderQueue()
 {
   render_queue_length = 0;
   delete[] render_queue;
   render_queue = new RenderItem[render_queue_length];
-  return 1;
 }
 
 void RenderQueue::pushBack(RenderItem element)
@@ -152,15 +149,16 @@ void RenderQueue::pushBack(RenderItem element)
 
   // delete old array, create new one with larger size.
   delete[] render_queue;
-  render_queue_length++;
-  render_queue = new RenderItem[render_queue_length];
+
+  render_queue = new RenderItem[render_queue_length + 1];
 
   // assign to temp, then delete temp;
-  for (int i = 0; i < render_queue_length - 1; i++)
+  for (int i = 0; i < render_queue_length; i++)
   {
     render_queue[i] = temp[i];
   }
   delete[] temp;
+  render_queue[render_queue_length] = element;
 
-  render_queue[render_queue_length - 1] = element;
+  render_queue_length++;
 }
