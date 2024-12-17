@@ -25,6 +25,12 @@ int main()
     sf::Sprite cat = SpriteUtils::getSpriteFromPath(
       "../Data/Images/Cat_Right.png", cat_texture);
 
+    sf::Font font = SpriteUtils::getFontFromPath("../Data/Fonts/OpenSans-Bold.ttf");
+
+    sf::Text text1 = SpriteUtils::setupText(
+      font, "Hello World!", 100, sf::Color(150, 0, 255), 0, 0);
+
+
     // set position (for testing), would usually be handled by the object class.
     bird.setPosition(10,10);
     ball.setPosition(20,20);
@@ -54,16 +60,11 @@ int main()
 
 
         // Test add to render Queue, can be done anywhere, in any order. 
+        render_queue.addToRenderQueue(text1, 30);
         render_queue.addToRenderQueue(bird, 1);
-        render_queue.addToRenderQueue(ball, 3);
+        render_queue.addToRenderQueue(ball, 2);
         render_queue.addToRenderQueue(background, 0);
-
-        // can also add via a render item. 
-        RenderQueue::RenderItem temp;
-        temp.layer = 2;
-        temp.sprite = cat;
-        render_queue.addToRenderQueue(temp);
-
+        render_queue.addToRenderQueue(cat, 3);
 
         // render, done at the end, renders in order with the lowest layer first. 
         render_queue.render();

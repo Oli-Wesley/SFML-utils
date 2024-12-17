@@ -15,28 +15,89 @@ bool RenderQueue::render()
   game_window.clear(sf::Color::Black);
   for (int i = 0; i < render_queue_length; i++)
   {
-    game_window.draw(render_queue[i].sprite);
+    if (render_queue[i].sprite != nullptr)
+    {
+      game_window.draw(*render_queue[i].sprite);
+    }
+    else if (render_queue[i].text != nullptr)
+    {
+      game_window.draw(*render_queue[i].text);
+    }
+    else if (render_queue[i].circle_shape != nullptr)
+    {
+      game_window.draw(*render_queue[i].circle_shape);
+    }
+    else if (render_queue[i].convex_shape!= nullptr)
+    {
+      game_window.draw(*render_queue[i].convex_shape);
+    }
+    else if (render_queue[i].rectangle_shape != nullptr)
+    {
+      game_window.draw(*render_queue[i].rectangle_shape);
+    }
+    else if (render_queue[i].vertex_array!= nullptr)
+    {
+      game_window.draw(*render_queue[i].vertex_array);
+    }
   }
   game_window.display();
   resetRenderQueue();
   return 1;
 }
 
-// Public: add to queue with a pre-made render item.
-bool RenderQueue::addToRenderQueue(RenderQueue::RenderItem render_item)
+void RenderQueue::addTorenderQueue(RenderItem render_item) 
 {
   pushBack(render_item);
-  return 1;
 }
 
-// Public: add to queue with a seperate sprite and layer.
-bool RenderQueue::addToRenderQueue(sf::Sprite sprite, int layer)
+// add to render queue functions, each one takes a drawable object and a layer
+void RenderQueue::addToRenderQueue(sf::Sprite& sprite, int layer)
 {
   RenderItem render_item;
   render_item.layer  = layer;
-  render_item.sprite = sprite;
+  render_item.sprite = &sprite;
   pushBack(render_item);
-  return 1;
+}
+
+void RenderQueue::addToRenderQueue(sf::Text& text, int layer)
+{
+  RenderItem render_item;
+  render_item.layer = layer;
+  render_item.text  = &text;
+  pushBack(render_item);
+}
+
+void RenderQueue::addToRenderQueue(sf::CircleShape& circle_shape, int layer)
+{
+  RenderItem render_item;
+  render_item.layer        = layer;
+  render_item.circle_shape = &circle_shape;
+  pushBack(render_item);
+}
+
+void RenderQueue::addToRenderQueue(sf::ConvexShape& convex_shape, int layer)
+{
+  RenderItem render_item;
+  render_item.layer        = layer;
+  render_item.convex_shape = &convex_shape;
+  pushBack(render_item);
+}
+
+void RenderQueue::addToRenderQueue(
+  sf::RectangleShape& rectangle_shape, int layer)
+{
+  RenderItem render_item;
+  render_item.layer           = layer;
+  render_item.rectangle_shape = &rectangle_shape;
+  pushBack(render_item);
+}
+
+void RenderQueue::addToRenderQueue(sf::VertexArray& vertex_array, int layer)
+{
+  RenderItem render_item;
+  render_item.layer        = layer;
+  render_item.vertex_array = &vertex_array;
+  pushBack(render_item);
 }
 
 int RenderQueue::getRenderQueueLength()

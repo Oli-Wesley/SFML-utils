@@ -8,13 +8,23 @@ class RenderQueue
  public:
   struct RenderItem
   {
-    sf::Sprite sprite;
-    int layer = NULL;
+    sf::Sprite* sprite = nullptr;
+    sf::Text* text     = nullptr;
+    sf::CircleShape* circle_shape = nullptr;
+    sf::ConvexShape* convex_shape    = nullptr;
+    sf::RectangleShape* rectangle_shape = nullptr;
+    sf::VertexArray* vertex_array       = nullptr;
+    int layer          = NULL;
   };
   RenderQueue(sf::RenderWindow& window);
   bool render();
-  bool addToRenderQueue(RenderItem);
-  bool addToRenderQueue(sf::Sprite sprite, int layer);
+  void addTorenderQueue(RenderItem render_item);
+  void addToRenderQueue(sf::Sprite& sprite, int layer);
+  void addToRenderQueue(sf::Text& text, int layer);
+  void addToRenderQueue(sf::CircleShape& circle_shape, int layer);
+  void addToRenderQueue(sf::ConvexShape& convex_shape, int layer);
+  void addToRenderQueue(sf::RectangleShape& rectangle_shape, int layer);
+  void addToRenderQueue(sf::VertexArray& vertex_array, int layer);
   int getRenderQueueLength();
 
  private:
