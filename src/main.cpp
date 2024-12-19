@@ -1,5 +1,4 @@
-#include "RenderQueue.h"
-#include "SpriteUtils.h"
+#include "Camera.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -10,33 +9,21 @@ int main()
   window.setFramerateLimit(60);
   // A Clock starts counting as soon as it's created
   sf::Clock clock;
-  RenderQueue render_queue(window);
+  Camera camera;
+  int pix_size = 1;
+  camera.setResolution(1080/pix_size, 720/pix_size, window);
+  // center 540,360
+  camera.setPosition(0, 0);
+  camera.setZoom(0.5);
 
-  // define textures, then assign to sprite.
-  sf::Texture bird_texture;
-  sf::Texture ball_texture;
-  sf::Texture background_texture;
-  sf::Texture cat_texture;
-  sf::Sprite bird =
-    SpriteUtils::getSpriteFromPath("../Data/Images/bird.png", bird_texture);
-  sf::Sprite ball =
-    SpriteUtils::getSpriteFromPath("../Data/Images/ball.png", ball_texture);
-  sf::Sprite background = SpriteUtils::getSpriteFromPath(
-    "../Data/Images/background.png", background_texture);
-  sf::Sprite cat =
-    SpriteUtils::getSpriteFromPath("../Data/Images/Cat_Right.png", cat_texture);
+  // define sprites, then setTexture.
+  SpriteRenderElement ball("../Data/Images/ball.png");
+  SpriteRenderElement background("../Data/Images/background.png", 0);
+  ball.setScale(1);
+  ball.setPosition(
+    window.getSize().x / 2,
+    window.getSize().y / 2);
 
-  sf::Font font = SpriteUtils::getFontFromPath("../Data/Fonts/"
-                                               "OpenSans-Bold.ttf");
-
-  sf::Text text1 = SpriteUtils::setupText(
-    font, "Hello World!", 100, sf::Color(150, 0, 255), 0, 0);
-
-  // set position (for testing), would usually be handled by the object class.
-  bird.setPosition(10, 10);
-  ball.setPosition(20, 20);
-  background.setPosition(0, 0);
-  cat.setPosition(20, 10);
 
   // Game loop: run the program as long as the window is open
   while (window.isOpen())
@@ -58,17 +45,26 @@ int main()
       // "close requested" event: we close the window
       if (event.type == sf::Event::Closed)
         window.close();
+      if (event.type == sf::Event::Resized)
+      {
+        sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+        window.setView(sf::View(visibleArea));
+      }
     }
 
-    // Test add to render Queue, can be done anywhere, in any order.
-    render_queue.addToRenderQueue(text1, 30);
-    render_queue.addToRenderQueue(bird, 1);
-    render_queue.addToRenderQueue(ball, 2);
-    render_queue.addToRenderQueue(background, 0);
-    render_queue.addToRenderQueue(cat, 3);
+    // update
+    camera.modifyZoom(0.001);
+    //std::cout << "camera coords (" << camera.getCenter().x << ", "
+    //          << camera.getCenter().y << ")\n";
 
-    // render, done at the end, renders in order with the lowest layer first.
-    render_queue.render();
+
+    // add all RenderElements to the camera to render.
+    camera.addToRender(ball);
+    camera.addToRender(background);
+
+    // render to the camera's render texture, then draw that to the window.
+    camera.render();
+    camera.drawToWindow(window);
   }
   return 0;
 }
