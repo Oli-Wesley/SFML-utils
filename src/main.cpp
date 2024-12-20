@@ -9,18 +9,46 @@ int main()
   window.setFramerateLimit(60);
   // A Clock starts counting as soon as it's created
   sf::Clock clock;
+  
+  // setup camera
   Camera camera;
-  float pix_size = 1;
-  camera.setResolution(window.getSize().x/pix_size, window.getSize().y/pix_size);
-  camera.setViewSize(2160, 1440);
+  camera.setResolution(1920,1080);
+  camera.setViewSize(1920, 1080);
   camera.setOriginPosition(0, 0);
   camera.setZoom(1);
 
-  // define sprites, then setTexture.
-  SpriteRenderElement ball("../Data/Images/ball.png");
-  SpriteRenderElement background("../Data/Images/background.png", 0);
-  ball.setScale(2);
-  ball.setPosition(window.getSize().x / 2, window.getSize().y / 2);
+  // define Sprites:
+  SpriteRenderElement clouds("../Data/Images/Clouds.png");
+  SpriteRenderElement grass("../Data/Images/grass.png");
+  SpriteRenderElement house("../Data/Images/House.png");
+  SpriteRenderElement mountains("../Data/Images/Mountains.png");
+  SpriteRenderElement people("../Data/Images/people.png");
+
+
+  mountains.setLayer(0);
+  clouds.setLayer(1);
+  house.setLayer(2);
+  people.setLayer(3);
+  grass.setLayer(4);
+
+  mountains.setMovePercentage(0.2);
+  clouds.setMovePercentage(0.5);
+  house.setMovePercentage(0.6);
+  people.setMovePercentage(1);
+  grass.setMovePercentage(0.9);
+
+  mountains.setScale(1);
+  people.setScale(0.25);
+  clouds.setScale(0.3);
+  grass.setScale(0.2);
+  house.setScale(0.4);
+
+  clouds.setPosition(0, 30);
+  people.setPosition(500, 800);
+  grass.setPosition(0, 870);
+  house.setPosition(0, 650);
+
+
   // Game loop: run the program as long as the window is open
   while (window.isOpen())
   {
@@ -99,13 +127,18 @@ int main()
       }
     }
 
-    // update 
-    //camera.modifyZoom(+0.001);
-    //camera.modifyPosition(1, 1);
-    camera.outputInfo();
+    // update
+    
+
+
+    // Render
+
     // add all RenderElements to the camera to render.
-    camera.addToRender(ball);
-    camera.addToRender(background);
+    camera.addToRender(clouds);
+    camera.addToRender(grass);
+    camera.addToRender(house);
+    camera.addToRender(mountains);
+    camera.addToRender(people);
 
     // render to the camera's render texture, then draw that to the window.
     window.clear(sf::Color(255, 255, 0));

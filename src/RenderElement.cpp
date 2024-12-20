@@ -177,19 +177,18 @@ void SpriteRenderElement::ConvertToScreenSpaceByCamera(
   Structs::XY sprite_pos;
   Structs::XY new_scale;
   // apply scaling
-  new_scale.x =
-    (getScale() / view_to_camera_factor.x);
+  new_scale.x = (getScale() / view_to_camera_factor.x);
   new_scale.y = (getScale() / view_to_camera_factor.x);
 
   // get position
-  sprite_pos.x =
-    (getPosition().x / view_to_camera_factor.x);
-  sprite_pos.y =
-    (getPosition().y / view_to_camera_factor.y);
+  sprite_pos.x = (getPosition().x / view_to_camera_factor.x);
+  sprite_pos.y = (getPosition().y / view_to_camera_factor.y);
 
   // move position into screenspace
-  sprite_pos.x -= (camera_viewbox.x*getMovePercentage()) / view_to_camera_factor.x;
-  sprite_pos.y -= (camera_viewbox.y*getMovePercentage()) / view_to_camera_factor.y;
+  sprite_pos.x -=
+    (camera_viewbox.x * getMovePercentage()) / view_to_camera_factor.x;
+  sprite_pos.y -=
+    (camera_viewbox.y * getMovePercentage()) / view_to_camera_factor.y;
 
   // apply scale and position
   sprite.setScale(new_scale.x, new_scale.y);
