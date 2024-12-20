@@ -55,7 +55,7 @@ void Camera::setZoom(float new_zoom)
   XY old_center = getCenter();
   if (new_zoom <= 0.0f)
     return;
-  zoom = new_zoom;
+  zoom          = new_zoom;
   XY new_center = getCenter();
 
   // modify adds the position to the current position
@@ -94,8 +94,10 @@ void Camera::render()
       position.y,
       getCenter().x,
       getCenter().y,
-      resolution_to_display_factor.x,
-      resolution_to_display_factor.y,
+      resolution.x,
+      resolution.y,
+      window_resolution.x,
+      window_resolution.y,
       zoom);
 
     // check on screen, if so, render, must do after applying the movements to
@@ -124,17 +126,29 @@ void Camera::drawToWindow(sf::RenderWindow& window)
   render_texture_sprite.setScale(
     resolution_to_display_factor.x, resolution_to_display_factor.y);
 
+  // std::cout << "camera res: (" << render_texture.getSize().x << ", "
+  //           << render_texture.getSize().y << ") \n";
+
   // draw to display
   window.draw(render_texture_sprite);
   window.display();
+}
+
+void Camera::setWindowResolution(int x, int y)
+{
+  window_resolution.x = x;
+  window_resolution.y = y;
+
+  resolution_to_display_factor.x = x / resolution.x;
+  resolution_to_display_factor.y = y / resolution.y;
 }
 
 Camera::XY Camera::getCenter()
 {
   XY center_coords;
 
-  center_coords.x = position.x + (resolution.x / 2) / zoom;
-  center_coords.y = position.y + (resolution.y / 2) / zoom;
+  center_coords.x = (position.x + (resolution.x / 2));
+  center_coords.y = (position.y + (resolution.y / 2));
 
   return center_coords;
 }

@@ -166,35 +166,41 @@ bool SpriteRenderElement::checkOnscreen(sf::RenderTexture& display)
 // convert from world space to screenspace position
 void SpriteRenderElement::ConvertToScreenSpaceByCamera(
   float camera_x, float camera_y, float camera_center_x, float camera_center_y,
-  float x_factor, float y_factor, float camera_zoom)
+  int camera_resolution_x, int camera_resolution_y, int display_resolution_x,
+  int display_resolution_y, float camera_zoom)
 {
-  // convert pos
+  // Convert position
   XY new_pos;
 
-  // apply position based on camera zoom:
-  float pos_x          = getPosition().x / x_factor;
-  float pos_y          = getPosition().y / y_factor;
-  float center_x       = camera_center_x / x_factor;
-  float center_y       = camera_center_y / y_factor;
+  // Resolution factors to scale positions between camera and display
+  float x_factor =
+    static_cast<float>(display_resolution_x) / camera_resolution_x;
+  float y_factor =
+    static_cast<float>(display_resolution_y) / camera_resolution_y;
+
+  // Get current sprite position in camera space, apply resolution scaling
+  float pos_x = getPosition().x * x_factor;
+  float pos_y = getPosition().y * y_factor;
+
+  // Get the camera center, apply resolution scaling
+  float center_x = camera_center_x / x_factor;
+  float center_y = camera_center_y / y_factor;
+
+  // Apply zoom factor to the position, then adjust by resolution factor
+  new_pos.x = (pos_x - center_x) * camera_zoom + center_x;
+  new_pos.y = (pos_y - center_y) * camera_zoom + center_y;
+
+  // Adjust scale with resolution and zoom
   float scale_factor_x = getScale() * camera_zoom / x_factor;
   float scale_factor_y = getScale() * camera_zoom / y_factor;
 
-  // this does not work if the camera's resolution the window resolution and the zoom is anything but 1. 
-  new_pos.x = (pos_x - center_x) * camera_zoom / x_factor + center_x;
-  new_pos.y = (pos_y - center_y) * camera_zoom / x_factor + center_y;
-
-  XY old_center = getSpriteCenter();
-
-  // convert scale.
+  // Set the sprite's new scale
   sprite.setScale(scale_factor_x, scale_factor_y);
 
-  XY new_center = getSpriteCenter();
-
-  new_pos.x += old_center.x - new_center.x;
-  new_pos.y += old_center.y - old_center.y;
-
+  // Set the sprite's new position
   sprite.setPosition(new_pos.x, new_pos.y);
 }
+
 
 // returns a reference to the sprite.
 sf::Sprite* SpriteRenderElement::getSprite()

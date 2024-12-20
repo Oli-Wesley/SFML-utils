@@ -67,7 +67,7 @@ class SpriteRenderElement : public RenderElement
   bool checkOnscreen(sf::RenderTexture& window);
   void ConvertToScreenSpaceByCamera(
     float camera_x, float camera_y, float camera_center_x,
-    float camera_center_y, float x_factor, float y_factor,
+    float camera_center_y, int camera_resolution_x, int camera_resolution_y, int display_resolution_x, int display_resolution_y,
     float camera_zoom);
   sf::Sprite* getSprite();
   bool setUpSpriteFromPath(std::string file_path);

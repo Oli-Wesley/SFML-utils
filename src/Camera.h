@@ -29,14 +29,18 @@ class Camera
   void render();
   void drawToWindow(sf::RenderWindow& window);
 
+  void setWindowResolution(int x, int y);
+
   XY getCenter();
 
  private:
   RenderQueue render_queue;
   float zoom = 1;
   XY position;
+  XY center_coords;
   sf::RenderTexture render_texture;
   XY resolution;
+  XY window_resolution;
   XY resolution_to_display_factor;
 };
 

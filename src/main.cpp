@@ -10,20 +10,18 @@ int main()
   // A Clock starts counting as soon as it's created
   sf::Clock clock;
   Camera camera;
-  int pix_size = 1;
-  camera.setResolution(1080/pix_size, 720/pix_size, window);
+  float pix_size = 1;
+  camera.setResolution(1080 / pix_size, 720 / pix_size, window);
+  camera.setWindowResolution(window.getSize().x, window.getSize().y);
   // center 540,360
   camera.setPosition(0, 0);
-  camera.setZoom(0.5);
+  camera.setZoom(1);
 
   // define sprites, then setTexture.
   SpriteRenderElement ball("../Data/Images/ball.png");
-  SpriteRenderElement background("../Data/Images/background.png", 0);
+  SpriteRenderElement background("../Data/Images/background_noise.png", 0);
   ball.setScale(1);
-  ball.setPosition(
-    window.getSize().x / 2,
-    window.getSize().y / 2);
-
+  ball.setPosition(window.getSize().x / 2, window.getSize().y / 2);
 
   // Game loop: run the program as long as the window is open
   while (window.isOpen())
@@ -49,14 +47,18 @@ int main()
       {
         sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
         window.setView(sf::View(visibleArea));
+        camera.setWindowResolution(visibleArea.width, visibleArea.height);
       }
     }
 
     // update
-    camera.modifyZoom(0.001);
-    //std::cout << "camera coords (" << camera.getCenter().x << ", "
-    //          << camera.getCenter().y << ")\n";
+    camera.modifyZoom(+0.001);
+    // camera.modifyPosition(100 * dt, 0);
 
+    // std::cout << "camera Center coords (" << camera.getCenter().x << ", "
+    //           << camera.getCenter().y << ")\n";
+    // std::cout << "camera coords (" << camera.getPosition().x << ", "
+    //           << camera.getPosition().y << ")\n";
 
     // add all RenderElements to the camera to render.
     camera.addToRender(ball);
