@@ -4,15 +4,11 @@
 #include "Vector2.h"
 #include <SFML/Graphics.hpp>
 #include <string>
+#include "Structs.h"
 
 class RenderElement
 {
  public:
-  struct XY
-  {
-    float x = 0;
-    float y = 0;
-  };
 
   // functions that everything inheriting from need to impliment themselves
   // bool checkOnscreen(sf::Window window);
@@ -28,7 +24,7 @@ class RenderElement
   void setScale(float new_scale);
 
   // getter setter, and modify for position;
-  XY getPosition();
+  Structs::XY getPosition();
   void setPosition(float new_x, float new_y);
   void modifyPosition(float new_x, float new_y);
 
@@ -46,12 +42,11 @@ class RenderElement
 
   float getMovePercentage();
   void setMovePercentage(float new_move_percentage);
-  void setMovePercentage(int new_move_percentage);
 
  private:
   float scale = 1;
   int layer   = 1;
-  XY position;
+  Structs::XY position;
   Vector2 vector;
   float vector_speed     = 100;
   bool moves_with_camera = 0;
@@ -66,12 +61,10 @@ class SpriteRenderElement : public RenderElement
   SpriteRenderElement(std::string file_path, int layer);
   bool checkOnscreen(sf::RenderTexture& window);
   void ConvertToScreenSpaceByCamera(
-    float camera_x, float camera_y, float camera_center_x,
-    float camera_center_y, int camera_resolution_x, int camera_resolution_y, int display_resolution_x, int display_resolution_y,
-    float camera_zoom);
+    Structs::Rect camera_viewbox, Structs::XY camera_resolution, Structs::XY display_resolution);
   sf::Sprite* getSprite();
   bool setUpSpriteFromPath(std::string file_path);
-  XY getSpriteCenter();
+  Structs::XY getSpriteCenter();
 
  private:
   sf::Sprite sprite;

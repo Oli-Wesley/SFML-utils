@@ -1,4 +1,5 @@
 #include "RenderElement.h"
+#include "Structs.h"
 #include "Vector2.h"
 #include <iostream>
 
@@ -22,7 +23,7 @@ void RenderElement::setScale(float new_scale)
   scale = new_scale;
 }
 
-RenderElement::XY RenderElement::getPosition()
+Structs::XY RenderElement::getPosition()
 {
   return position;
 }
@@ -89,24 +90,11 @@ float RenderElement::getMovePercentage()
 
 void RenderElement::setMovePercentage(float new_move_percentage)
 {
-  if (move_percentage > -1 && move_percentage < 1)
+  if (move_percentage >= -1 && move_percentage <= 1)
   {
     move_percentage = new_move_percentage;
   }
   else if (move_percentage > -100 && move_percentage < 100)
-  {
-    move_percentage = new_move_percentage / 100;
-  }
-  else
-  {
-    std::cout << "ERROR: Invalid Move Percentage";
-    throw;
-  }
-}
-
-void RenderElement::setMovePercentage(int new_move_percentage)
-{
-  if (move_percentage > -100 && move_percentage < 100)
   {
     move_percentage = new_move_percentage / 100;
   }
@@ -163,44 +151,50 @@ bool SpriteRenderElement::checkOnscreen(sf::RenderTexture& display)
   return 1;
 }
 
-// convert from world space to screenspace position
 void SpriteRenderElement::ConvertToScreenSpaceByCamera(
-  float camera_x, float camera_y, float camera_center_x, float camera_center_y,
-  int camera_resolution_x, int camera_resolution_y, int display_resolution_x,
-  int display_resolution_y, float camera_zoom)
+  Structs::Rect camera_viewbox, Structs::XY camera_resolution,
+  Structs::XY display_resolution)
 {
-  // Convert position
-  XY new_pos;
+  Structs::XY screen_to_display_factor;
+  Structs::XY view_to_camera_factor;
+  Structs::Rect sprite_bounds;
+  Structs::XY camera_center;
 
-  // Resolution factors to scale positions between camera and display
-  float x_factor =
-    static_cast<float>(display_resolution_x) / camera_resolution_x;
-  float y_factor =
-    static_cast<float>(display_resolution_y) / camera_resolution_y;
+  screen_to_display_factor.x = display_resolution.x / camera_resolution.x;
+  screen_to_display_factor.y = display_resolution.y / camera_resolution.y;
 
-  // Get current sprite position in camera space, apply resolution scaling
-  float pos_x = getPosition().x * x_factor;
-  float pos_y = getPosition().y * y_factor;
+  view_to_camera_factor.x = camera_viewbox.width / camera_resolution.x;
+  view_to_camera_factor.y = camera_viewbox.height / camera_resolution.y;
 
-  // Get the camera center, apply resolution scaling
-  float center_x = camera_center_x / x_factor;
-  float center_y = camera_center_y / y_factor;
+  sprite_bounds.x      = sprite.getLocalBounds().left;
+  sprite_bounds.y      = sprite.getLocalBounds().top;
+  sprite_bounds.width  = sprite.getLocalBounds().width;
+  sprite_bounds.height = sprite.getLocalBounds().height;
 
-  // Apply zoom factor to the position, then adjust by resolution factor
-  new_pos.x = (pos_x - center_x) * camera_zoom + center_x;
-  new_pos.y = (pos_y - center_y) * camera_zoom + center_y;
+  camera_center.x = camera_viewbox.x + camera_viewbox.width / 2;
+  camera_center.y = camera_viewbox.y + camera_viewbox.height / 2;
 
-  // Adjust scale with resolution and zoom
-  float scale_factor_x = getScale() * camera_zoom / x_factor;
-  float scale_factor_y = getScale() * camera_zoom / y_factor;
+  Structs::XY sprite_pos;
+  Structs::XY new_scale;
+  // apply scaling
+  new_scale.x =
+    (getScale() / view_to_camera_factor.x);
+  new_scale.y = (getScale() / view_to_camera_factor.x);
 
-  // Set the sprite's new scale
-  sprite.setScale(scale_factor_x, scale_factor_y);
+  // get position
+  sprite_pos.x =
+    (getPosition().x / view_to_camera_factor.x);
+  sprite_pos.y =
+    (getPosition().y / view_to_camera_factor.y);
 
-  // Set the sprite's new position
-  sprite.setPosition(new_pos.x, new_pos.y);
+  // move position into screenspace
+  sprite_pos.x -= (camera_viewbox.x*getMovePercentage()) / view_to_camera_factor.x;
+  sprite_pos.y -= (camera_viewbox.y*getMovePercentage()) / view_to_camera_factor.y;
+
+  // apply scale and position
+  sprite.setScale(new_scale.x, new_scale.y);
+  sprite.setPosition(sprite_pos.x, sprite_pos.y);
 }
-
 
 // returns a reference to the sprite.
 sf::Sprite* SpriteRenderElement::getSprite()
@@ -218,9 +212,9 @@ bool SpriteRenderElement::setUpSpriteFromPath(std::string file_path)
   return false;
 }
 
-RenderElement::XY SpriteRenderElement::getSpriteCenter()
+Structs::XY SpriteRenderElement::getSpriteCenter()
 {
-  XY center_coords;
+  Structs::XY center_coords;
   sf::Rect sprite_bounds = sprite.getGlobalBounds();
 
   center_coords.x = sprite_bounds.left + sprite_bounds.width / 2;

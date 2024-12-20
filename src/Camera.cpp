@@ -1,12 +1,15 @@
 #include "Camera.h"
 #include "RenderElement.h"
 #include "RenderQueue.h"
+#include "Structs.h"
 #include <iostream>
 
 Camera::Camera()
 {
-  resolution.x = 1920;
-  resolution.y = 1080;
+  resolution.x     = 1920;
+  resolution.y     = 1080;
+  view_rect.width  = 1920;
+  view_rect.height = 1080;
   if (!render_texture.create(resolution.x, resolution.y))
   {
     std::cout << "ERROR: failed to create RenderTexture";
@@ -14,7 +17,7 @@ Camera::Camera()
   }
 }
 
-void Camera::setResolution(int x, int y, sf::Window& window)
+void Camera::setResolution(int x, int y)
 {
   resolution.x = x;
   resolution.y = y;
@@ -23,43 +26,45 @@ void Camera::setResolution(int x, int y, sf::Window& window)
     std::cout << "ERROR: failed to create RenderTexture";
     throw;
   }
-
-  resolution_to_display_factor.x = window.getSize().x / resolution.x;
-  resolution_to_display_factor.y = window.getSize().y / resolution.y;
 }
 
-Camera::XY Camera::getResolution()
+void Camera::setViewSize(int x, int y)
 {
-  return resolution;
+  view_rect.width  = x;
+  view_rect.height = y;
 }
 
-void Camera::setPosition(float x, float y)
+void Camera::setCenterPosition(float x, float y)
 {
-  position.x = x;
-  position.y = y;
+  view_rect.x -= x + view_rect.width / 2;
+  view_rect.y -= y + view_rect.height / 2;
+}
+
+void Camera::setOriginPosition(float x, float y) 
+{
+  view_rect.x = x;
+  view_rect.y = y;
 }
 
 void Camera::modifyPosition(float x, float y)
 {
-  position.x += x;
-  position.y += y;
+  view_rect.x += x;
+  view_rect.y += y;
 }
 
-Camera::XY Camera::getPosition()
+Structs::Rect Camera::getView()
 {
-  return position;
+  return view_rect;
 }
 
 void Camera::setZoom(float new_zoom)
 {
-  XY old_center = getCenter();
-  if (new_zoom <= 0.0f)
-    return;
-  zoom          = new_zoom;
-  XY new_center = getCenter();
-
-  // modify adds the position to the current position
-  modifyPosition(old_center.x - new_center.x, old_center.y - new_center.y);
+  
+  if (new_zoom > 0.01)
+  {
+  scaleAroundCenter(zoom, new_zoom);
+  zoom = new_zoom;
+  }
 }
 
 void Camera::modifyZoom(float new_zoom)
@@ -81,27 +86,22 @@ void Camera::addToRender(SpriteRenderElement& render_element)
   render_queue.addTorenderQueue(render_item);
 }
 
-void Camera::render()
+void Camera::render(sf::RenderWindow& window)
 {
   render_queue.sortRenderQueue();
-  render_texture.clear(sf::Color(255, 0, 0));
+  render_texture.clear(sf::Color(0, 0, 0, 0));
+  Structs::XY windowResolution;
+  windowResolution.x = window.getSize().x;
+  windowResolution.y = window.getSize().y;
   // iterate over the render_queue and draw each element.
   for (int i = 0; i < render_queue.getRenderQueueLength(); i++)
   {
-    // apply position (currently zooms based on top left corner), TODO fix that.
-    render_queue.getElementAtPosition(i)->sprite->ConvertToScreenSpaceByCamera(
-      position.x,
-      position.y,
-      getCenter().x,
-      getCenter().y,
-      resolution.x,
-      resolution.y,
-      window_resolution.x,
-      window_resolution.y,
-      zoom);
-
     // check on screen, if so, render, must do after applying the movements to
     // the base sprite.
+
+    render_queue.getElementAtPosition(i)->sprite->ConvertToScreenSpaceByCamera(
+      view_rect, resolution, windowResolution);
+
     if (render_queue.getElementAtPosition(i)->sprite->checkOnscreen(
           render_texture))
     {
@@ -112,12 +112,14 @@ void Camera::render()
   }
   render_queue.reset();
   render_texture.display();
+  drawToWindow(window);
 }
 
 void Camera::drawToWindow(sf::RenderWindow& window)
 {
   sf::Texture texture = render_texture.getTexture();
   sf::Sprite render_texture_sprite(texture);
+  Structs::XY resolution_to_display_factor;
 
   // scale to size of the display.
   resolution_to_display_factor.x = window.getSize().x / resolution.x;
@@ -131,24 +133,36 @@ void Camera::drawToWindow(sf::RenderWindow& window)
 
   // draw to display
   window.draw(render_texture_sprite);
-  window.display();
 }
 
-void Camera::setWindowResolution(int x, int y)
+void Camera::outputInfo()
 {
-  window_resolution.x = x;
-  window_resolution.y = y;
-
-  resolution_to_display_factor.x = x / resolution.x;
-  resolution_to_display_factor.y = y / resolution.y;
+  std::cout << "camera Center coords: (" << getCenter().x << ", "
+            << getCenter().y << "), camera Rect: (" << getView().x << ", "
+            << getView().y << ", " << getView().width << ", "
+            << getView().height << "), Camera Zoom: (" << zoom << ")\n";
 }
 
-Camera::XY Camera::getCenter()
+Structs::XY Camera::getCenter()
 {
-  XY center_coords;
+  Structs::XY center_coords;
 
-  center_coords.x = (position.x + (resolution.x / 2));
-  center_coords.y = (position.y + (resolution.y / 2));
+  center_coords.x = view_rect.x + view_rect.width / 2;
+  center_coords.y = view_rect.y + view_rect.height / 2;
 
   return center_coords;
+}
+
+void Camera::scaleAroundCenter(float old_scale, float new_scale)
+{
+  Structs::XY old_center = getCenter();
+  view_rect.width /= old_scale;
+  view_rect.height /= old_scale;
+
+  view_rect.width *= new_scale;
+  view_rect.height *= new_scale;
+
+  Structs::XY new_center = getCenter();
+  view_rect.x += old_center.x - new_center.x;
+  view_rect.y += old_center.y - new_center.y;
 }

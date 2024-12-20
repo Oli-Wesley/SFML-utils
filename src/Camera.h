@@ -2,46 +2,40 @@
 #define CAMERA_H
 #include "RenderElement.h"
 #include "RenderQueue.h"
+#include "Structs.h"
 #include <SFML/Graphics.hpp>
 
 class Camera
 {
  public:
-  struct XY
-  {
-    float x = 0;
-    float y = 0;
-  };
   Camera();
 
-  void setResolution(int x, int y, sf::Window & window);
-  XY getResolution();
+  void setResolution(int x, int y);
+  void setViewSize(int x, int y);
 
-  void setPosition(float x, float y);
+  void setCenterPosition(float x, float y);
+  void setOriginPosition(float x, float y);
   void modifyPosition(float x, float y);
-  XY getPosition();
+  Structs::Rect getView();
 
   void setZoom(float new_zoom);
   void modifyZoom(float new_zoom);
   float getZoom();
-
   void addToRender(SpriteRenderElement& render_element);
-  void render();
+  void render(sf::RenderWindow& window);
   void drawToWindow(sf::RenderWindow& window);
 
-  void setWindowResolution(int x, int y);
+  void outputInfo();
 
-  XY getCenter();
+  Structs::XY getCenter();
 
  private:
+  void scaleAroundCenter(float old_scale, float new_scale);
   RenderQueue render_queue;
   float zoom = 1;
-  XY position;
-  XY center_coords;
+  Structs::Rect view_rect;
   sf::RenderTexture render_texture;
-  XY resolution;
-  XY window_resolution;
-  XY resolution_to_display_factor;
+  Structs::XY resolution;
 };
 
 #endif

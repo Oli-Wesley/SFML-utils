@@ -11,18 +11,16 @@ int main()
   sf::Clock clock;
   Camera camera;
   float pix_size = 1;
-  camera.setResolution(1080 / pix_size, 720 / pix_size, window);
-  camera.setWindowResolution(window.getSize().x, window.getSize().y);
-  // center 540,360
-  camera.setPosition(0, 0);
+  camera.setResolution(window.getSize().x/pix_size, window.getSize().y/pix_size);
+  camera.setViewSize(2160, 1440);
+  camera.setOriginPosition(0, 0);
   camera.setZoom(1);
 
   // define sprites, then setTexture.
   SpriteRenderElement ball("../Data/Images/ball.png");
-  SpriteRenderElement background("../Data/Images/background_noise.png", 0);
-  ball.setScale(1);
+  SpriteRenderElement background("../Data/Images/background.png", 0);
+  ball.setScale(2);
   ball.setPosition(window.getSize().x / 2, window.getSize().y / 2);
-
   // Game loop: run the program as long as the window is open
   while (window.isOpen())
   {
@@ -47,26 +45,72 @@ int main()
       {
         sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
         window.setView(sf::View(visibleArea));
-        camera.setWindowResolution(visibleArea.width, visibleArea.height);
+      }
+      if (event.type == sf::Event::KeyPressed)
+      {
+        if (event.key.code == sf::Keyboard::W)
+        {
+          camera.modifyPosition(0, -10);
+        }
+        else if (event.key.code == sf::Keyboard::S)
+        {
+          camera.modifyPosition(0, 10);
+        }
+        else if (event.key.code == sf::Keyboard::A)
+        {
+          camera.modifyPosition(-10, 0);
+        }
+        else if (event.key.code == sf::Keyboard::D)
+        {
+          camera.modifyPosition(10, 0);
+        }
+        else if (event.key.code == sf::Keyboard::Q)
+        {
+          camera.modifyZoom(-0.01);
+        }
+        else if (event.key.code == sf::Keyboard::E)
+        {
+          camera.modifyZoom(0.01);
+        }
+        else if (event.key.code == sf::Keyboard::Num1)
+        {
+          float pix_size = 1;
+          camera.setResolution(
+            window.getSize().x / pix_size, window.getSize().y / pix_size);
+        }
+        else if (event.key.code == sf::Keyboard::Num2)
+        {
+          float pix_size = 2;
+          camera.setResolution(
+            window.getSize().x / pix_size, window.getSize().y / pix_size);
+        }
+        else if (event.key.code == sf::Keyboard::Num3)
+        {
+          float pix_size = 5;
+          camera.setResolution(
+            window.getSize().x / pix_size, window.getSize().y / pix_size);
+        }
+        else if (event.key.code == sf::Keyboard::Num4)
+        {
+          float pix_size = 10;
+          camera.setResolution(
+            window.getSize().x / pix_size, window.getSize().y / pix_size);
+        }
       }
     }
 
-    // update
-    camera.modifyZoom(+0.001);
-    // camera.modifyPosition(100 * dt, 0);
-
-    // std::cout << "camera Center coords (" << camera.getCenter().x << ", "
-    //           << camera.getCenter().y << ")\n";
-    // std::cout << "camera coords (" << camera.getPosition().x << ", "
-    //           << camera.getPosition().y << ")\n";
-
+    // update 
+    //camera.modifyZoom(+0.001);
+    //camera.modifyPosition(1, 1);
+    camera.outputInfo();
     // add all RenderElements to the camera to render.
     camera.addToRender(ball);
     camera.addToRender(background);
 
     // render to the camera's render texture, then draw that to the window.
-    camera.render();
-    camera.drawToWindow(window);
+    window.clear(sf::Color(255, 255, 0));
+    camera.render(window);
+    window.display();
   }
   return 0;
 }
