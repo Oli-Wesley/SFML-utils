@@ -46,8 +46,8 @@ void Camera::setViewSize(int x, int y)
 // moves the camera center to a given position.
 void Camera::setCenterPosition(float x, float y)
 {
-  view_rect.x -= x + view_rect.width / 2;
-  view_rect.y -= y + view_rect.height / 2;
+  view_rect.x = x - view_rect.width / 2;
+  view_rect.y = y - view_rect.height / 2;
 }
 
 // sets the camera's top left corner to a given position.
