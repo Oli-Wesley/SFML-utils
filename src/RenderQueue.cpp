@@ -2,107 +2,103 @@
 #include <SFML/Graphics.hpp>
 
 // constructor, saves the window value for later use.
-RenderQueue::RenderQueue(sf::RenderWindow& window) : game_window(window)
+RenderQueue::RenderQueue()
 {
   delete[] render_queue;
-  render_queue = new RenderItem[render_queue_length];
 }
 
 // Public: sorts, then draws the render queue, starting with the lowest layer.
-void RenderQueue::render()
-{
-  sortRenderQueue();
-  game_window.clear(sf::Color::Black);
-  for (int i = 0; i < render_queue_length; i++)
-  {
-    if (render_queue[i].sprite != nullptr)
-    {
-      game_window.draw(*render_queue[i].sprite);
-    }
-    else if (render_queue[i].text != nullptr)
-    {
-      game_window.draw(*render_queue[i].text);
-    }
-    else if (render_queue[i].circle_shape != nullptr)
-    {
-      game_window.draw(*render_queue[i].circle_shape);
-    }
-    else if (render_queue[i].convex_shape != nullptr)
-    {
-      game_window.draw(*render_queue[i].convex_shape);
-    }
-    else if (render_queue[i].rectangle_shape != nullptr)
-    {
-      game_window.draw(*render_queue[i].rectangle_shape);
-    }
-    else if (render_queue[i].vertex_array != nullptr)
-    {
-      game_window.draw(*render_queue[i].vertex_array);
-    }
-  }
-  game_window.display();
-  resetRenderQueue();
-}
+//void RenderQueue::render()
+//{
+//  sortRenderQueue();
+//  game_window.clear(sf::Color::Black);
+//  for (int i = 0; i < render_queue_length; i++)
+//  {
+//    if (render_queue[i].sprite != nullptr)
+//    {
+//      game_window.draw(*render_queue[i].sprite);
+//    }
+//    else if (render_queue[i].text != nullptr)
+//    {
+//      game_window.draw(*render_queue[i].text);
+//    }
+//    else if (render_queue[i].circle_shape != nullptr)
+//    {
+//      game_window.draw(*render_queue[i].circle_shape);
+//    }
+//    else if (render_queue[i].convex_shape != nullptr)
+//    {
+//      game_window.draw(*render_queue[i].convex_shape);
+//    }
+//    else if (render_queue[i].rectangle_shape != nullptr)
+//    {
+//      game_window.draw(*render_queue[i].rectangle_shape);
+//    }
+//    else if (render_queue[i].vertex_array != nullptr)
+//    {
+//      game_window.draw(*render_queue[i].vertex_array);
+//    }
+//  }
+//  game_window.display();
+//  resetRenderQueue();
+//}
 
 void RenderQueue::addTorenderQueue(RenderItem render_item)
 {
   pushBack(render_item);
 }
 
-// add to render queue functions, each one takes a drawable object and a layer
-void RenderQueue::addToRenderQueue(sf::Sprite& sprite, int layer)
-{
-  RenderItem render_item;
-  render_item.layer  = layer;
-  render_item.sprite = &sprite;
-  pushBack(render_item);
-}
-
-void RenderQueue::addToRenderQueue(sf::Text& text, int layer)
-{
-  RenderItem render_item;
-  render_item.layer = layer;
-  render_item.text  = &text;
-  pushBack(render_item);
-}
-
-void RenderQueue::addToRenderQueue(sf::CircleShape& circle_shape, int layer)
-{
-  RenderItem render_item;
-  render_item.layer        = layer;
-  render_item.circle_shape = &circle_shape;
-  pushBack(render_item);
-}
-
-void RenderQueue::addToRenderQueue(sf::ConvexShape& convex_shape, int layer)
-{
-  RenderItem render_item;
-  render_item.layer        = layer;
-  render_item.convex_shape = &convex_shape;
-  pushBack(render_item);
-}
-
-void RenderQueue::addToRenderQueue(
-  sf::RectangleShape& rectangle_shape, int layer)
-{
-  RenderItem render_item;
-  render_item.layer           = layer;
-  render_item.rectangle_shape = &rectangle_shape;
-  pushBack(render_item);
-}
-
-void RenderQueue::addToRenderQueue(sf::VertexArray& vertex_array, int layer)
-{
-  RenderItem render_item;
-  render_item.layer        = layer;
-  render_item.vertex_array = &vertex_array;
-  pushBack(render_item);
-}
+//void RenderQueue::addToRenderQueue(sf::Text& text, int layer)
+//{
+//  RenderItem render_item;
+//  render_item.layer = layer;
+//  render_item.text  = &text;
+//  pushBack(render_item);
+//}
+//
+//void RenderQueue::addToRenderQueue(sf::CircleShape& circle_shape, int layer)
+//{
+//  RenderItem render_item;
+//  render_item.layer        = layer;
+//  render_item.circle_shape = &circle_shape;
+//  pushBack(render_item);
+//}
+//
+//void RenderQueue::addToRenderQueue(sf::ConvexShape& convex_shape, int layer)
+//{
+//  RenderItem render_item;
+//  render_item.layer        = layer;
+//  render_item.convex_shape = &convex_shape;
+//  pushBack(render_item);
+//}
+//
+//void RenderQueue::addToRenderQueue(
+//  sf::RectangleShape& rectangle_shape, int layer)
+//{
+//  RenderItem render_item;
+//  render_item.layer           = layer;
+//  render_item.rectangle_shape = &rectangle_shape;
+//  pushBack(render_item);
+//}
+//
+//void RenderQueue::addToRenderQueue(sf::VertexArray& vertex_array, int layer)
+//{
+//  RenderItem render_item;
+//  render_item.layer        = layer;
+//  render_item.vertex_array = &vertex_array;
+//  pushBack(render_item);
+//}
 
 int RenderQueue::getRenderQueueLength()
 {
   return render_queue_length;
 }
+
+RenderQueue::RenderItem* RenderQueue::getElementAtPosition(int position)
+{
+  return &render_queue[position];
+}
+
 
 // private: sort the render queue, this puts the queue in order ready for
 // rendering.
@@ -129,7 +125,7 @@ void RenderQueue::sortRenderQueue()
 }
 
 // private: resets the render queue.
-void RenderQueue::resetRenderQueue()
+void RenderQueue::reset()
 {
   render_queue_length = 0;
   delete[] render_queue;

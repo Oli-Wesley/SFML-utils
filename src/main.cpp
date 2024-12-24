@@ -1,42 +1,72 @@
-#include "RenderQueue.h"
-#include "SpriteUtils.h"
+#include "Camera.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
 int main()
 {
   // create window and set up
-  sf::RenderWindow window(sf::VideoMode(1080, 720), "My SFML game");
+  sf::RenderWindow window(sf::VideoMode(1920, 1080), "My SFML game");
   window.setFramerateLimit(60);
   // A Clock starts counting as soon as it's created
   sf::Clock clock;
-  RenderQueue render_queue(window);
+  bool debug = 0;
 
-  // define textures, then assign to sprite.
-  sf::Texture bird_texture;
-  sf::Texture ball_texture;
-  sf::Texture background_texture;
-  sf::Texture cat_texture;
-  sf::Sprite bird =
-    SpriteUtils::getSpriteFromPath("../Data/Images/bird.png", bird_texture);
-  sf::Sprite ball =
-    SpriteUtils::getSpriteFromPath("../Data/Images/ball.png", ball_texture);
-  sf::Sprite background = SpriteUtils::getSpriteFromPath(
-    "../Data/Images/background.png", background_texture);
-  sf::Sprite cat =
-    SpriteUtils::getSpriteFromPath("../Data/Images/Cat_Right.png", cat_texture);
+  // setup camera
+  Camera camera;
+  // setup camera, viewsize and resolution can be different, however they should
+  // be the same aspect ratio otherwise things appear stretched.
+  camera.setResolution(1920, 1080);
+  camera.setViewSize(1920, 1080);
+  // set position (can be center or origin)
+  camera.setCenterPosition(0, 0);
 
-  sf::Font font = SpriteUtils::getFontFromPath("../Data/Fonts/"
-                                               "OpenSans-Bold.ttf");
+  // setup sprites with path and (optional) layer
+  SpriteRenderElement test_square("../Data/Images/Test_Square.png", 500);
+  SpriteRenderElement test_square_red(
+    "../Data/Images/Test_Square_Red.png", 500);
+  SpriteRenderElement test_square_green(
+    "../Data/Images/Test_Square_Green.png", 500);
 
-  sf::Text text1 = SpriteUtils::setupText(
-    font, "Hello World!", 100, sf::Color(150, 0, 255), 0, 0);
+  // set positions on 2 corners and center of the camera's position.
+  test_square.setPosition(
+    camera.getCenter().x - test_square.getSprite()->getLocalBounds().width / 2,
+    camera.getCenter().y -
+      test_square.getSprite()->getLocalBounds().height / 2);
 
-  // set position (for testing), would usually be handled by the object class.
-  bird.setPosition(10, 10);
-  ball.setPosition(20, 20);
-  background.setPosition(0, 0);
-  cat.setPosition(20, 10);
+  test_square_red.setPosition(
+    -camera.getView().width / 2, -camera.getView().height / 2);
+
+  test_square_green.setPosition(
+    camera.getView().width / 2 -
+      test_square.getSprite()->getLocalBounds().width,
+    camera.getView().height / 2 -
+      test_square.getSprite()->getLocalBounds().height);
+
+  // scene setup
+  // define Sprites:
+  SpriteRenderElement clouds("../Data/Images/Clouds.png", 2);
+  SpriteRenderElement grass("../Data/Images/grass.png", 4);
+  SpriteRenderElement house("../Data/Images/House.png", 3);
+  SpriteRenderElement mountains("../Data/Images/Mountains.png", 1);
+  SpriteRenderElement people("../Data/Images/people.png", 5);
+
+  clouds.setMovePercentage(0.4);
+  house.setMovePercentage(0.6);
+  mountains.setMovePercentage(0.2);
+  grass.setMovePercentage(1);
+  people.setMovePercentage(0.01);
+
+  mountains.setScale(1);
+  people.setScale(0.25);
+  clouds.setScale(0.5);
+  grass.setScale(0.4);
+  house.setScale(0.4);
+
+  mountains.setPosition(-1920, -540);
+  clouds.setPosition(-960, -520);
+  people.setPosition(-200, 280);
+  grass.setPosition(-420, 110);
+  house.setPosition(-920, 110);
 
   // Game loop: run the program as long as the window is open
   while (window.isOpen())
@@ -58,17 +88,102 @@ int main()
       // "close requested" event: we close the window
       if (event.type == sf::Event::Closed)
         window.close();
+      if (event.type == sf::Event::Resized)
+      {
+        sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+        window.setView(sf::View(visibleArea));
+      }
+
+      // controls for moving zooming, and changing the res of the camera.
+      if (event.type == sf::Event::KeyPressed)
+      {
+        if (event.key.code == sf::Keyboard::Escape)
+        {
+          window.close();
+        }
+        else if (event.key.code == sf::Keyboard::W)
+        {
+          camera.modifyPosition(0, -10);
+        }
+        else if (event.key.code == sf::Keyboard::S)
+        {
+          camera.modifyPosition(0, 10);
+        }
+        else if (event.key.code == sf::Keyboard::A)
+        {
+          camera.modifyPosition(-10, 0);
+        }
+        else if (event.key.code == sf::Keyboard::D)
+        {
+          camera.modifyPosition(10, 0);
+        }
+        else if (event.key.code == sf::Keyboard::Q)
+        {
+          camera.modifyZoom(-0.01);
+        }
+        else if (event.key.code == sf::Keyboard::E)
+        {
+          camera.modifyZoom(0.01);
+        }
+        else if (event.key.code == sf::Keyboard::F)
+        {
+          debug = !debug;
+        }
+        else if (event.key.code == sf::Keyboard::Num1)
+        {
+          float pix_size = 1;
+          camera.setResolution(
+            window.getSize().x / pix_size, window.getSize().y / pix_size);
+        }
+        else if (event.key.code == sf::Keyboard::Num2)
+        {
+          float pix_size = 2;
+          camera.setResolution(
+            window.getSize().x / pix_size, window.getSize().y / pix_size);
+        }
+        else if (event.key.code == sf::Keyboard::Num3)
+        {
+          float pix_size = 5;
+          camera.setResolution(
+            window.getSize().x / pix_size, window.getSize().y / pix_size);
+        }
+        else if (event.key.code == sf::Keyboard::Num4)
+        {
+          float pix_size = 10;
+          camera.setResolution(
+            window.getSize().x / pix_size, window.getSize().y / pix_size);
+        }
+      }
     }
 
-    // Test add to render Queue, can be done anywhere, in any order.
-    render_queue.addToRenderQueue(text1, 30);
-    render_queue.addToRenderQueue(bird, 1);
-    render_queue.addToRenderQueue(ball, 2);
-    render_queue.addToRenderQueue(background, 0);
-    render_queue.addToRenderQueue(cat, 3);
+    // update (would be moving characters ect...)
 
-    // render, done at the end, renders in order with the lowest layer first.
-    render_queue.render();
+    // Render
+
+    // add all RenderElements to the camera to render.
+    if (debug)
+    {
+      camera.outputInfo();
+      camera.addToRender(test_square);
+      camera.addToRender(test_square_red);
+      camera.addToRender(test_square_green);
+    }
+
+    camera.addToRender(clouds);
+    camera.addToRender(grass);
+    camera.addToRender(house);
+    camera.addToRender(mountains);
+    camera.addToRender(people);
+
+    // render to the camera's render texture, then draw that to the window.
+    window.clear(sf::Color(255, 255, 0));
+    // draw to the window (has a transparent background for areas that don't
+    // have anything given.
+    camera.render(window);
+    // draw ui ontop of what the camera sees as usual:
+
+    // draw everything to the display
+    window.display();
   }
   return 0;
 }
