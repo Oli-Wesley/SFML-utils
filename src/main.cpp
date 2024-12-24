@@ -9,6 +9,7 @@ int main()
   window.setFramerateLimit(60);
   // A Clock starts counting as soon as it's created
   sf::Clock clock;
+  bool debug = 0;
 
   // setup camera
   Camera camera;
@@ -124,6 +125,10 @@ int main()
         {
           camera.modifyZoom(0.01);
         }
+        else if (event.key.code == sf::Keyboard::F)
+        {
+          debug = !debug;
+        }
         else if (event.key.code == sf::Keyboard::Num1)
         {
           float pix_size = 1;
@@ -156,9 +161,13 @@ int main()
     // Render
 
     // add all RenderElements to the camera to render.
-    camera.addToRender(test_square);
-    camera.addToRender(test_square_red);
-    camera.addToRender(test_square_green);
+    if (debug)
+    {
+      camera.outputInfo();
+      camera.addToRender(test_square);
+      camera.addToRender(test_square_red);
+      camera.addToRender(test_square_green);
+    }
 
     camera.addToRender(clouds);
     camera.addToRender(grass);
