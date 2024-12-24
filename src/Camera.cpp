@@ -4,6 +4,7 @@
 #include "Structs.h"
 #include <iostream>
 
+// default setup for camera.
 Camera::Camera()
 {
   resolution.x     = 1920;
@@ -17,6 +18,7 @@ Camera::Camera()
   }
 }
 
+// sets the camera render resolution (not view size)
 void Camera::setResolution(int x, int y)
 {
   resolution.x = x;
@@ -28,55 +30,70 @@ void Camera::setResolution(int x, int y)
   }
 }
 
+// change view size, scales around the center to a given size.
 void Camera::setViewSize(int x, int y)
 {
+  Structs::XY old_center = getCenter();
+
   view_rect.width  = x;
   view_rect.height = y;
+
+  Structs::XY new_center = getCenter();
+  view_rect.x += old_center.x - new_center.x;
+  view_rect.y += old_center.y - new_center.y;
 }
 
+// moves the camera center to a given position.
 void Camera::setCenterPosition(float x, float y)
 {
   view_rect.x -= x + view_rect.width / 2;
   view_rect.y -= y + view_rect.height / 2;
 }
 
-void Camera::setOriginPosition(float x, float y) 
+// sets the camera's top left corner to a given position.
+void Camera::setOriginPosition(float x, float y)
 {
   view_rect.x = x;
   view_rect.y = y;
 }
 
+// incriments position by a given value.
 void Camera::modifyPosition(float x, float y)
 {
   view_rect.x += x;
   view_rect.y += y;
 }
 
+// returns the camera's current view
 Structs::Rect Camera::getView()
 {
   return view_rect;
 }
 
+// sets the zoom to a given value
 void Camera::setZoom(float new_zoom)
 {
-  
   if (new_zoom > 0.01)
   {
-  scaleAroundCenter(zoom, new_zoom);
-  zoom = new_zoom;
+    scaleAroundCenter(zoom, new_zoom);
+    zoom = new_zoom;
   }
 }
 
+// incriments zoom by a given amount.
 void Camera::modifyZoom(float new_zoom)
 {
   setZoom(zoom + new_zoom);
 }
 
+// retuns current zoom value
 float Camera::getZoom()
 {
   return zoom;
 }
 
+// adds a SpriteRenderElement to the camera's render queue, needs to be done
+// every frame the element want's to be drawn
 void Camera::addToRender(SpriteRenderElement& render_element)
 {
   RenderQueue::RenderItem render_item;
@@ -86,6 +103,7 @@ void Camera::addToRender(SpriteRenderElement& render_element)
   render_queue.addTorenderQueue(render_item);
 }
 
+// Renders the camera's render queue to a given window
 void Camera::render(sf::RenderWindow& window)
 {
   render_queue.sortRenderQueue();
@@ -108,13 +126,14 @@ void Camera::render(sf::RenderWindow& window)
       render_texture.draw(
         *render_queue.getElementAtPosition(i)->sprite->getSprite());
     }
-    // else std::cout << "element " << i << " is offscreen, not drawing\n";
+    /*  else std::cout << "element " << i << " is offscreen, not drawing\n";*/
   }
   render_queue.reset();
   render_texture.display();
   drawToWindow(window);
 }
 
+// scale's the camera's render texture to the size of the window. 
 void Camera::drawToWindow(sf::RenderWindow& window)
 {
   sf::Texture texture = render_texture.getTexture();
@@ -135,14 +154,7 @@ void Camera::drawToWindow(sf::RenderWindow& window)
   window.draw(render_texture_sprite);
 }
 
-void Camera::outputInfo()
-{
-  std::cout << "camera Center coords: (" << getCenter().x << ", "
-            << getCenter().y << "), camera Rect: (" << getView().x << ", "
-            << getView().y << ", " << getView().width << ", "
-            << getView().height << "), Camera Zoom: (" << zoom << ")\n";
-}
-
+// returns the camera's current center.
 Structs::XY Camera::getCenter()
 {
   Structs::XY center_coords;
@@ -153,6 +165,16 @@ Structs::XY Camera::getCenter()
   return center_coords;
 }
 
+// debug tool for outputting the camera's current info
+void Camera::outputInfo()
+{
+  std::cout << "camera Center coords: (" << getCenter().x << ", "
+            << getCenter().y << "), camera Rect: (" << getView().x << ", "
+            << getView().y << ", " << getView().width << ", "
+            << getView().height << "), Camera Zoom: (" << zoom << ")\n";
+}
+
+// private helper for changing zoom levels.
 void Camera::scaleAroundCenter(float old_scale, float new_scale)
 {
   Structs::XY old_center = getCenter();

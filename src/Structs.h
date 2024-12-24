@@ -4,18 +4,19 @@
 
 namespace Structs
 {
+  // helpful structs for positions and rects
   struct XY
   {
-    float x = 0;
-    float y = 0;
+    double x = 0;
+    double y = 0;
   };
 
   struct Rect
   {
-    float x      = 0;
-    float y      = 0;
-    float width  = 0;
-    float height = 0;
+    double x      = 0;
+    double y      = 0;
+    double width  = 0;
+    double height  = 0;
   };
 }
 

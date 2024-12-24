@@ -155,6 +155,7 @@ void SpriteRenderElement::ConvertToScreenSpaceByCamera(
   Structs::Rect camera_viewbox, Structs::XY camera_resolution,
   Structs::XY display_resolution)
 {
+  // assign variables
   Structs::XY screen_to_display_factor;
   Structs::XY view_to_camera_factor;
   Structs::Rect sprite_bounds;
@@ -174,21 +175,30 @@ void SpriteRenderElement::ConvertToScreenSpaceByCamera(
   camera_center.x = camera_viewbox.x + camera_viewbox.width / 2;
   camera_center.y = camera_viewbox.y + camera_viewbox.height / 2;
 
+  // Position and Scale
   Structs::XY sprite_pos;
   Structs::XY new_scale;
-  // apply scaling
-  new_scale.x = (getScale() / view_to_camera_factor.x);
-  new_scale.y = (getScale() / view_to_camera_factor.x);
 
-  // get position
-  sprite_pos.x = (getPosition().x / view_to_camera_factor.x);
-  sprite_pos.y = (getPosition().y / view_to_camera_factor.y);
+  // get scaling
+  new_scale.x = getScale() / view_to_camera_factor.x;
+  new_scale.y = getScale() / view_to_camera_factor.x;
 
+  // get position of sprite
+  sprite_pos.x = getPosition().x + camera_center.x;
+  sprite_pos.y = getPosition().y + camera_center.y;
+
+  // apply movement percentage
+  sprite_pos.x -= (getMovePercentage() * camera_center.x) - camera_viewbox.width/2;
+  sprite_pos.y -= (getMovePercentage() * camera_center.y) - camera_viewbox.height/2;
+
+  
   // move position into screenspace
-  sprite_pos.x -=
-    (camera_viewbox.x * getMovePercentage()) / view_to_camera_factor.x;
-  sprite_pos.y -=
-    (camera_viewbox.y * getMovePercentage()) / view_to_camera_factor.y;
+  sprite_pos.x -= camera_center.x;
+  sprite_pos.y -= camera_center.y;
+
+  // scale based on zoom
+  sprite_pos.x /= view_to_camera_factor.x;
+  sprite_pos.y /= view_to_camera_factor.y;
 
   // apply scale and position
   sprite.setScale(new_scale.x, new_scale.y);

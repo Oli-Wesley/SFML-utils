@@ -5,49 +5,41 @@
 int main()
 {
   // create window and set up
-  sf::RenderWindow window(sf::VideoMode(1080, 720), "My SFML game");
+  sf::RenderWindow window(sf::VideoMode(1920, 1080), "My SFML game");
   window.setFramerateLimit(60);
   // A Clock starts counting as soon as it's created
   sf::Clock clock;
-  
+
   // setup camera
   Camera camera;
-  camera.setResolution(1920,1080);
+  // setup camera, viewsize and resolution can be different, however they should
+  // be the same aspect ratio otherwise things appear stretched.
+  camera.setResolution(1920, 1080);
   camera.setViewSize(1920, 1080);
-  camera.setOriginPosition(0, 0);
-  camera.setZoom(1);
+  // set position (can be center or origin)
+  camera.setCenterPosition(0, 0);
 
-  // define Sprites:
-  SpriteRenderElement clouds("../Data/Images/Clouds.png");
-  SpriteRenderElement grass("../Data/Images/grass.png");
-  SpriteRenderElement house("../Data/Images/House.png");
-  SpriteRenderElement mountains("../Data/Images/Mountains.png");
-  SpriteRenderElement people("../Data/Images/people.png");
+  // setup sprites with path and (optional) layer
+  SpriteRenderElement test_square("../Data/Images/Test_Square.png", 500);
+  SpriteRenderElement test_square_red(
+    "../Data/Images/Test_Square_Red.png", 500);
+  SpriteRenderElement test_square_green(
+    "../Data/Images/Test_Square_Green.png", 500);
 
+  // set positions on 2 corners and center of the camera's position.
+  test_square.setPosition(
+    camera.getCenter().x - test_square.getSprite()->getLocalBounds().width / 2,
+    camera.getCenter().y -
+      test_square.getSprite()->getLocalBounds().height / 2);
 
-  mountains.setLayer(0);
-  clouds.setLayer(1);
-  house.setLayer(2);
-  people.setLayer(3);
-  grass.setLayer(4);
+  test_square_red.setPosition(
+    -camera.getView().width / 2, -camera.getView().height / 2);
 
-  mountains.setMovePercentage(0.2);
-  clouds.setMovePercentage(0.5);
-  house.setMovePercentage(0.6);
-  people.setMovePercentage(1);
-  grass.setMovePercentage(0.9);
-
-  mountains.setScale(1);
-  people.setScale(0.25);
-  clouds.setScale(0.3);
-  grass.setScale(0.2);
-  house.setScale(0.4);
-
-  clouds.setPosition(0, 30);
-  people.setPosition(500, 800);
-  grass.setPosition(0, 870);
-  house.setPosition(0, 650);
-
+  test_square_green.setPosition(
+    camera.getView().width / 2 -
+      test_square.getSprite()->getLocalBounds().width,
+    camera.getView().height / 2 -
+      test_square.getSprite()->getLocalBounds().height);
 
   // Game loop: run the program as long as the window is open
   while (window.isOpen())
@@ -74,6 +66,8 @@ int main()
         sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
         window.setView(sf::View(visibleArea));
       }
+
+      // controls for moving zooming, and changing the res of the camera.
       if (event.type == sf::Event::KeyPressed)
       {
         if (event.key.code == sf::Keyboard::W)
@@ -127,22 +121,23 @@ int main()
       }
     }
 
-    // update
-    
-
+    // update (would be moving characters ect...)
 
     // Render
 
     // add all RenderElements to the camera to render.
-    camera.addToRender(clouds);
-    camera.addToRender(grass);
-    camera.addToRender(house);
-    camera.addToRender(mountains);
-    camera.addToRender(people);
+    camera.addToRender(test_square);
+    camera.addToRender(test_square_red);
+    camera.addToRender(test_square_green);
 
     // render to the camera's render texture, then draw that to the window.
     window.clear(sf::Color(255, 255, 0));
+    // draw to the window (has a transparent background for areas that don't
+    // have anything given.
     camera.render(window);
+    // draw ui ontop of what the camera sees as usual:
+
+    // draw everything to the display
     window.display();
   }
   return 0;
