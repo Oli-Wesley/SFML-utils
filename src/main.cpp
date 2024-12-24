@@ -41,6 +41,32 @@ int main()
     camera.getView().height / 2 -
       test_square.getSprite()->getLocalBounds().height);
 
+  // scene setup
+  // define Sprites:
+  SpriteRenderElement clouds("../Data/Images/Clouds.png", 2);
+  SpriteRenderElement grass("../Data/Images/grass.png", 4);
+  SpriteRenderElement house("../Data/Images/House.png", 3);
+  SpriteRenderElement mountains("../Data/Images/Mountains.png", 1);
+  SpriteRenderElement people("../Data/Images/people.png", 5);
+
+  clouds.setMovePercentage(0.4);
+  house.setMovePercentage(0.6);
+  mountains.setMovePercentage(0.2);
+  grass.setMovePercentage(1);
+  people.setMovePercentage(0.01);
+
+  mountains.setScale(1);
+  people.setScale(0.25);
+  clouds.setScale(0.5);
+  grass.setScale(0.4);
+  house.setScale(0.4);
+
+  mountains.setPosition(-1920, -540);
+  clouds.setPosition(-960, -520);
+  people.setPosition(-200, 280);
+  grass.setPosition(-420, 110);
+  house.setPosition(-920, 110);
+
   // Game loop: run the program as long as the window is open
   while (window.isOpen())
   {
@@ -70,7 +96,11 @@ int main()
       // controls for moving zooming, and changing the res of the camera.
       if (event.type == sf::Event::KeyPressed)
       {
-        if (event.key.code == sf::Keyboard::W)
+        if (event.key.code == sf::Keyboard::Escape)
+        {
+          window.close();
+        }
+        else if (event.key.code == sf::Keyboard::W)
         {
           camera.modifyPosition(0, -10);
         }
@@ -129,6 +159,12 @@ int main()
     camera.addToRender(test_square);
     camera.addToRender(test_square_red);
     camera.addToRender(test_square_green);
+
+    camera.addToRender(clouds);
+    camera.addToRender(grass);
+    camera.addToRender(house);
+    camera.addToRender(mountains);
+    camera.addToRender(people);
 
     // render to the camera's render texture, then draw that to the window.
     window.clear(sf::Color(255, 255, 0));
