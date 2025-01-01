@@ -2,7 +2,7 @@
 #define CAMERA_H
 #include "RenderElement.h"
 #include "RenderQueue.h"
-#include "Structs.h"
+#include "../DataStructures/Structs.h"
 #include <SFML/Graphics.hpp>
 
 class Camera

@@ -1,6 +1,6 @@
 #include "RenderElement.h"
-#include "Structs.h"
-#include "Vector2.h"
+#include "../DataStructures/Structs.h"
+#include "../DataStructures/Vector2.h"
 #include <iostream>
 
 int RenderElement::getLayer()

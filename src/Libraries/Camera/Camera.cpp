@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include "RenderElement.h"
 #include "RenderQueue.h"
-#include "Structs.h"
+#include "../DataStructures/Structs.h"
 #include <iostream>
 
 // default setup for camera.

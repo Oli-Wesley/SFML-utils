@@ -1,4 +1,4 @@
-#include "Camera.h"
+#include "Libraries/Camera/Camera.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -17,7 +17,7 @@ int main()
   // be the same aspect ratio otherwise things appear stretched.
   camera.setResolution(1920, 1080);
   camera.setViewSize(1920, 1080);
-  // set position (can be center or origin)
+  // set position (can be center or origin, Center is reccomended.)
   camera.setCenterPosition(0, 0);
 
   // setup sprites with path and (optional) layer

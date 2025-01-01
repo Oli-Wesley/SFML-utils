@@ -1,8 +1,8 @@
 #ifndef RENDER_ELEMENT_H
 #define RENDER_ELEMENT_H
 
-#include "Structs.h"
-#include "Vector2.h"
+#include "../DataStructures/Structs.h"
+#include "../DataStructures/Vector2.h"
 #include <SFML/Graphics.hpp>
 #include <string>
 
