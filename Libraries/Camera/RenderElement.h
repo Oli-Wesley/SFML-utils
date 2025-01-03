@@ -11,11 +11,12 @@
 class RenderElement
 {
  public:
-  // functions that everything inheriting from need to impliment themselves
-  // bool checkOnscreen(sf::Window& window);
-  // void ConvertToScreenSpaceByCamera(
-  //  Structs::Rect camera_viewbox, Structs::XY camera_resolution,
-  //  Structs::XY display_resolution);
+  // Interface for inhereted classes. 
+  virtual bool checkOnscreen(sf::RenderTexture& render_texture) = 0;
+  virtual void ConvertToScreenSpaceByCamera(
+    Structs::Rect camera_viewbox, Structs::XY camera_resolution,
+    Structs::XY display_resolution)                    = 0;
+  virtual void draw(sf::RenderTexture& render_texture) = 0;
 
   // pre-written functions for all classes inheriting from this:
   //
@@ -58,16 +59,17 @@ class RenderElement
 class SpriteRenderElement : public RenderElement
 {
  public:
-     // constructors. allow setting up with a sprite and layer.
+  // constructors. allow setting up with a sprite and layer.
   SpriteRenderElement();
   SpriteRenderElement(std::string file_path);
   SpriteRenderElement(std::string file_path, int layer);
 
-  // functions that all renderElements must have: 
-  bool checkOnscreen(sf::RenderTexture& window);
+  // functions that all renderElements must have, implemented from above class.
+  bool checkOnscreen(sf::RenderTexture& render_texture);
   void ConvertToScreenSpaceByCamera(
     Structs::Rect camera_viewbox, Structs::XY camera_resolution,
     Structs::XY display_resolution);
+  void draw(sf::RenderTexture& texture);
 
   // sprite specific functions:
   sf::Sprite* getSprite();

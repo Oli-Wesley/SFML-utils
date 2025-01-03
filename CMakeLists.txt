@@ -17,8 +17,8 @@ FetchContent_MakeAvailable(SFML)    # Makes sure SFML and its dependencies are a
 
 #---- File management & .exe creation ----#
 
-# Collect all .cpp, .h and .hpp files from the src/Libraries directory recursively
-file(GLOB_RECURSE LIBRARY_FILES "src/Libraries/*.cpp" "src/Libraries/*.h", "src/Libraries/*.hpp")
+# Collect all .cpp, .h and .hpp files from the Libraries directory recursively
+file(GLOB_RECURSE LIBRARY_FILES "Libraries/*.cpp" "Libraries/*.h", "Libraries/*.hpp")
 
 # Define the main source files 
 set(SOURCE_FILES "src/main.cpp")

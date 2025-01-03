@@ -1,4 +1,4 @@
-#include "Libraries/Camera/Camera.h"
+#include "../Libraries/Camera/Camera.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 

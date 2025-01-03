@@ -131,7 +131,7 @@ SpriteRenderElement::SpriteRenderElement(std::string file_path, int layer)
 }
 
 // checks if the sprite is on screen, given a texture and its current bounds.
-bool SpriteRenderElement::checkOnscreen(sf::RenderTexture& display)
+bool SpriteRenderElement::checkOnscreen(sf::RenderTexture& render_texture)
 {
   // store sprite bound rect
   sf::FloatRect sprite_bounds = sprite.getGlobalBounds();
@@ -140,13 +140,13 @@ bool SpriteRenderElement::checkOnscreen(sf::RenderTexture& display)
   if (sprite_bounds.left + sprite_bounds.width < 0)
     return 0;
   // right
-  else if (sprite_bounds.left > display.getSize().x)
+  else if (sprite_bounds.left > render_texture.getSize().x)
     return 0;
   // top
   else if (sprite_bounds.top + sprite_bounds.height < 0)
     return 0;
   // bottom
-  else if (sprite_bounds.top > display.getSize().y)
+  else if (sprite_bounds.top > render_texture.getSize().y)
     return 0;
   return 1;
 }
@@ -188,10 +188,11 @@ void SpriteRenderElement::ConvertToScreenSpaceByCamera(
   sprite_pos.y = getPosition().y + camera_center.y;
 
   // apply movement percentage
-  sprite_pos.x -= (getMovePercentage() * camera_center.x) - camera_viewbox.width/2;
-  sprite_pos.y -= (getMovePercentage() * camera_center.y) - camera_viewbox.height/2;
+  sprite_pos.x -=
+    (getMovePercentage() * camera_center.x) - camera_viewbox.width / 2;
+  sprite_pos.y -=
+    (getMovePercentage() * camera_center.y) - camera_viewbox.height / 2;
 
-  
   // move position into screenspace
   sprite_pos.x -= camera_center.x;
   sprite_pos.y -= camera_center.y;
@@ -203,6 +204,11 @@ void SpriteRenderElement::ConvertToScreenSpaceByCamera(
   // apply scale and position
   sprite.setScale(new_scale.x, new_scale.y);
   sprite.setPosition(sprite_pos.x, sprite_pos.y);
+}
+
+void SpriteRenderElement::draw(sf::RenderTexture& texture)
+{
+  texture.draw(sprite);
 }
 
 // returns a reference to the sprite.

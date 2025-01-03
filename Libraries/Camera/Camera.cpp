@@ -123,8 +123,7 @@ void Camera::render(sf::RenderWindow& window)
     if (render_queue.getElementAtPosition(i)->sprite->checkOnscreen(
           render_texture))
     {
-      render_texture.draw(
-        *render_queue.getElementAtPosition(i)->sprite->getSprite());
+        render_queue.getElementAtPosition(i)->sprite->draw(render_texture);
     }
     /*  else std::cout << "element " << i << " is offscreen, not drawing\n";*/
   }
